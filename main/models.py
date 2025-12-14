@@ -65,11 +65,25 @@ class ProductCategory(models.Model):
 
 class Country(models.Model):
     name = models.CharField(max_length = 100)
+    slug = models.SlugField(max_length = 100, unique = True)
     icon = models.ImageField(upload_to = 'country/image')
     is_active = models.BooleanField(default = True)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+
+        slug = slugify(self.name)
+        number = 1
+
+        while Country.objects.filter(slug = slug).exists():
+            slug = slugify(self.name) + f"-{number}"
+            number += 1
+
+        self.slug = slug
+
+        return super().save(*args, **kwargs)
 
 
 class Product(models.Model):
@@ -115,7 +129,7 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey("Product", on_delete = models.CASCADE, related_name = "product_images")
+    product = models.ForeignKey(Product, on_delete = models.CASCADE, related_name = "product_images")
     image = models.ImageField(upload_to = 'product_image/image')
     is_active = models.BooleanField(default = True)
 

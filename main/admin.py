@@ -24,6 +24,7 @@ class CountryAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_active')
     list_filter = ('is_active',)
     search_fields = ('name',)
+    prepopulated_fields = {'slug': ('title',)}
     
 
 @admin.register(Product)
