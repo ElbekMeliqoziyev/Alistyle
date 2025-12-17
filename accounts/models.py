@@ -10,7 +10,12 @@ class User(AbstractUser):
     phone = models.CharField(max_length=50)
     address = models.TextField()
     image = models.FileField(upload_to='users/image')
-    statuc = models.CharField(max_length=50, choices=StatusChoices.choices, default=StatusChoices.CUSTOMER )
+    status = models.CharField(max_length=50, choices=StatusChoices.choices, default=StatusChoices.CUSTOMER )
 
     def __str__(self):
         return self.username 
+
+    def save(self, *args, **kwargs):
+        if self.status == StatusChoices.ADMIN:
+            self.is_staff = True
+        super().save(*args, **kwargs)
